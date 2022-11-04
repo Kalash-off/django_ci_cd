@@ -1,30 +1,23 @@
-pipeline{
-    agent any
-    stages {
-    
-        stage('Setup Python Virtual ENV'){
-       
-      steps  {
-            sh '''
-            chmod +x envsetup.sh
-            ./envsetup.sh
-            '''}
-        }
-        stage('Setup Gunicorn Setup'){
-            steps {
-                sh '''
-                chmod +x gunicorn.sh
-                ./gunicorn.sh
-                '''
-            }
-        }
-        stage('setup NGINX'){
-            steps {
-                sh '''
-                chmod +x nginx.sh
-                ./nginx.sh
-                '''
-            }
-        }
-    }
-}
+#!/bin/bash
+
+if [ -d "env" ] 
+then
+    echo "Python virtual environment exists." 
+else
+    python3 -m venv env
+fi
+
+source env/bin/activate
+
+
+pip3 install -r requirements.txt
+
+if [ -d "logs" ] 
+then
+    echo "Log folder exists." 
+else
+    mkdir logs
+    touch logs/error.log logs/access.log
+fi
+
+sudo chmod -R 777 logs
